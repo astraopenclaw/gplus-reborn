@@ -12,7 +12,8 @@ class ApiService {
 
   // --- AUTH ---
 
-  Future<Map<String, dynamic>?> login(String email, String password) async {
+  // Returns error message or null if success
+  Future<String?> login(String email, String password) async {
     final baseUrl = await getBaseUrl();
     try {
       final response = await http.post(
@@ -25,15 +26,15 @@ class ApiService {
         final data = jsonDecode(response.body);
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('user_token', data['token']);
-        await prefs.setString('user_id', data['user']['id']);
+        await prefs.setString('user_id', data['user']['id'].toString());
         await prefs.setString('user_name', data['user']['name']);
-        await prefs.setString('user_email', data['user']['email']);
-        return data['user'];
+        await prefs.setString('user_email', data['user']['email'] ?? '');
+        return null; // Success
       }
-      return null;
+      return 'Server error: ${response.statusCode}';
     } catch (e) {
       print('Login error: $e');
-      return null;
+      return 'App error: $e';
     }
   }
 

@@ -43,17 +43,17 @@ class _LoginPageState extends State<LoginPage> {
 
   void _login() async {
     setState(() => _isLoading = true);
-    final user = await _authService.login(
+    final error = await _authService.login(
       _emailController.text,
       _passwordController.text,
     );
     setState(() => _isLoading = false);
 
-    if (user != null) {
+    if (error == null) {
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomePage()));
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login failed')),
+        SnackBar(content: Text(error)),
       );
     }
   }
