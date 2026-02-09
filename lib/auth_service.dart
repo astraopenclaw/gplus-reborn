@@ -2,8 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AuthService {
-  // Default to our VDS
+class ApiService {
   static const String defaultBaseUrl = 'http://37.46.128.100';
   
   Future<String> getBaseUrl() async {
@@ -11,7 +10,9 @@ class AuthService {
     return prefs.getString('base_url') ?? defaultBaseUrl;
   }
 
-  Future<bool> login(String email, String password) async {
+  // --- AUTH ---
+
+  Future<Map<String, dynamic>?> login(String email, String password) async {
     final baseUrl = await getBaseUrl();
     try {
       final response = await http.post(
@@ -21,15 +22,18 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
-        // Save token (mock)
+        final data = jsonDecode(response.body);
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('user_token', 'mock_token_123');
-        return true;
+        await prefs.setString('user_token', data['token']);
+        await prefs.setString('user_id', data['user']['id']);
+        await prefs.setString('user_name', data['user']['name']);
+        await prefs.setString('user_email', data['user']['email']);
+        return data['user'];
       }
-      return false;
+      return null;
     } catch (e) {
       print('Login error: $e');
-      return false;
+      return null;
     }
   }
 
@@ -41,10 +45,52 @@ class AuthService {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'name': name, 'email': email, 'password': password}),
       );
-
       return response.statusCode == 200 || response.statusCode == 201;
     } catch (e) {
-      print('Register error: $e');
+      return false;
+    }
+  }
+  
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
+  
+  Future<Map<String, String>> getUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    return {
+        'id': prefs.getString('user_id') ?? '',
+        'name': prefs.getString('user_name') ?? 'Guest',
+        'email': prefs.getString('user_email') ?? ''
+    };
+  }
+
+  // --- POSTS ---
+
+  Future<List<dynamic>> getPosts() async {
+    final baseUrl = await getBaseUrl();
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/api/posts'));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+    } catch (e) {}
+    return [];
+  }
+  
+  Future<bool> createPost(String content) async {
+    final baseUrl = await getBaseUrl();
+    final user = await getUser();
+    if (user['id']!.isEmpty) return false;
+    
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/posts'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'content': content, 'authorId': user['id']}),
+      );
+      return response.statusCode == 201;
+    } catch (e) {
       return false;
     }
   }
