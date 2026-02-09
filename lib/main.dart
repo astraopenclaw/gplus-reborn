@@ -39,14 +39,14 @@ class LoginPage extends StatelessWidget {
           children: [
             // Logo placeholder
             Container(
-              width: 100,
-              height: 100,
-              decoration: const BoxDecoration(
-                color: Color(0xFFDD4B39),
-                shape: BoxShape.circle,
-              ),
-              child: const Center(
-                child: Text('g+', style: TextStyle(color: Colors.white, fontSize: 48, fontWeight: FontWeight.bold)),
+              width: 120,
+              height: 120,
+              // decoration: const BoxDecoration(
+              //   color: Color(0xFFDD4B39),
+              //   shape: BoxShape.circle,
+              // ),
+              child: Center(
+                child: Image.asset('assets/logo.png'),
               ),
             ),
             const SizedBox(height: 40),
