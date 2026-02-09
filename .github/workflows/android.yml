@@ -28,6 +28,11 @@ jobs:
     - name: Create Android Platform Files
       run: flutter create . --platforms android
 
+    - name: Enable Cleartext Traffic (Fix HTTP)
+      run: |
+        sed -i 's/<application/<application android:usesCleartextTraffic="true"/g' android/app/src/main/AndroidManifest.xml
+        cat android/app/src/main/AndroidManifest.xml # Verify
+
     - name: Build APK
       run: flutter build apk --release
 
