@@ -95,4 +95,30 @@ class ApiService {
       return false;
     }
   }
+
+  Future<bool> addComment(String postId, String content) async {
+    final baseUrl = await getBaseUrl();
+    final user = await getUser();
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/posts/$postId/comments'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'content': content, 'authorId': user['id']}),
+      );
+      return response.statusCode == 201;
+    } catch (e) {
+      return false;
+    }
+  }
+  
+  Future<Map<String, dynamic>?> getUserProfile(String userId) async {
+    final baseUrl = await getBaseUrl();
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/api/users/$userId'));
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      }
+    } catch (e) {}
+    return null;
+  }
 }

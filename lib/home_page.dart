@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'auth_service.dart';
 import 'create_post_page.dart';
+import 'post_detail_page.dart';
+import 'profile_page.dart';
 import 'main.dart'; // For LoginPage
 
 class HomePage extends StatefulWidget {
@@ -16,6 +18,7 @@ class _HomePageState extends State<HomePage> {
   final _api = ApiService();
   String _userName = 'Guest';
   String _userEmail = '';
+  String _userId = '';
 
   @override
   void initState() {
@@ -29,6 +32,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _userName = user['name']!;
       _userEmail = user['email']!;
+      _userId = user['id']!;
     });
   }
 
@@ -51,7 +55,7 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: const Color(0xFFE5E5E5),
       appBar: AppBar(
         backgroundColor: const Color(0xFFDD4B39),
-        title: const Text('Home'), // Or logo
+        title: const Text('Home'),
         actions: [
           IconButton(icon: const Icon(Icons.refresh), onPressed: _loadPosts),
         ],
@@ -77,7 +81,16 @@ class _HomePageState extends State<HomePage> {
             ),
             ListTile(
                 leading: const Icon(Icons.person),
-                title: const Text('Profile'),
+                title: const Text('Profile (Debug Force)'),
+                onTap: () {
+                    Navigator.pop(context);
+                    // Force open even if userId is empty (for debug)
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage(userId: _userId.isEmpty ? '1' : _userId)));
+                },
+            ),
+            ListTile(
+                leading: const Icon(Icons.bug_report),
+                title: Text('Debug: ID=$_userId'),
                 onTap: () {},
             ),
             const Divider(),
@@ -112,6 +125,11 @@ class _HomePageState extends State<HomePage> {
                           ),
                           title: Text(post['author'], style: const TextStyle(fontWeight: FontWeight.bold)),
                           subtitle: Text(post['date'] ?? ''),
+                          onTap: () {
+                              if (post['authorId'] != null) {
+                                  Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage(userId: post['authorId'])));
+                              }
+                          },
                         ),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -121,9 +139,11 @@ class _HomePageState extends State<HomePage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            _actionBtn(Icons.add, '1'),
-                            _actionBtn(Icons.comment, 'Comment'),
-                            _actionBtn(Icons.share, 'Share'),
+                            _actionBtn(Icons.add, '1', () {}),
+                            _actionBtn(Icons.comment, 'Comment', () {
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => PostDetailPage(post: post)));
+                            }),
+                            _actionBtn(Icons.share, 'Share', () {}),
                           ],
                         ),
                       ],
@@ -135,19 +155,20 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFFDD4B39),
         child: const Icon(Icons.edit),
-        onPressed: () async {
-            final result = await Navigator.push(context, MaterialPageRoute(builder: (_) => const CreatePostPage()));
-            if (result == true) _loadPosts();
+        onPressed: () {
+            // Debug: Just open it!
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const CreatePostPage()))
+                .then((res) => { if(res==true) _loadPosts() });
         },
       ),
     );
   }
   
-  Widget _actionBtn(IconData icon, String label) {
+  Widget _actionBtn(IconData icon, String label, VoidCallback onTap) {
       return TextButton.icon(
           icon: Icon(icon, size: 18, color: Colors.grey[600]),
           label: Text(label, style: TextStyle(color: Colors.grey[600])),
-          onPressed: () {},
+          onPressed: onTap,
       );
   }
 }
