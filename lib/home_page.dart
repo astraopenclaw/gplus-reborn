@@ -115,7 +115,7 @@ class _HomePageState extends State<HomePage> {
                   return Card(
                     elevation: 2,
                     margin: const EdgeInsets.only(bottom: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(2)),
+                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
