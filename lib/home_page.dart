@@ -154,13 +154,22 @@ class _HomePageState extends State<HomePage> {
                             _actionBtn(Icons.comment, 'Comment', () {
                                 Navigator.push(context, MaterialPageRoute(builder: (_) => PostDetailPage(post: post)));
                             }),
-                            _actionBtn(Icons.share, 'Share', () async {
-                                final user = await _api.getSessionUser();
-                                final content = "Reshared from ${post['author']}:\n\n> ${post['content']}";
-                                await _api.createPost(content);
-                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Shared to stream!')));
-                                _loadPosts(); // Reload to see new post
-                            }),
+                            _actionBtn(
+                                Icons.share, 
+                                'Share',
+                                () async {
+                                    // Short press: Internal Repost
+                                    final user = await _api.getSessionUser();
+                                    final content = "Reshared from ${post['author']}:\n\n> ${post['content']}";
+                                    await _api.createPost(content);
+                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Shared to stream!')));
+                                    _loadPosts();
+                                },
+                                onLongPress: () {
+                                    // Long press: System Share
+                                    Share.share("${post['author']} posted: ${post['content']}\n\n(via Google+)");
+                                }
+                            ),
                           ],
                         ),
                       ],
