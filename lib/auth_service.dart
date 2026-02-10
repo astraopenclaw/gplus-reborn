@@ -125,6 +125,15 @@ class ApiService {
       final prefs = await SharedPreferences.getInstance();
       return prefs.containsKey('user_token');
   }
+
+  Future<Map<String, String>> getUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    return {
+        'id': prefs.getString('user_id') ?? '',
+        'name': prefs.getString('user_name') ?? 'Guest',
+        'email': prefs.getString('user_email') ?? ''
+    };
+  }
   
   Future<Map<String, dynamic>?> getUserProfile(String userId) async {
     final baseUrl = await getBaseUrl();
