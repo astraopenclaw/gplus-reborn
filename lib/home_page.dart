@@ -163,7 +163,9 @@ class _HomePageState extends State<HomePage> {
                                     final user = await _api.getSessionUser();
                                     final content = "Reshared from ${post['author']}:\n\n> ${post['content']}";
                                     await _api.createPost(content);
-                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Shared to stream!')));
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Shared to stream!')));
+                                    }
                                     _loadPosts();
                                 },
                                 onLongPress: () {
