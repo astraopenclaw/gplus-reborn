@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
   }
   
   void _loadUser() async {
-    final user = await _api.getUser();
+    final user = await _api.getCurrentUser();
     setState(() {
       _userName = user['name']!;
       _userEmail = user['email']!;
@@ -155,7 +155,7 @@ class _HomePageState extends State<HomePage> {
                                 Navigator.push(context, MaterialPageRoute(builder: (_) => PostDetailPage(post: post)));
                             }),
                             _actionBtn(Icons.share, 'Share', () async {
-                                final user = await _api.getUser();
+                                final user = await _api.getCurrentUser();
                                 final content = "Reshared from ${post['author']}:\n\n> ${post['content']}";
                                 await _api.createPost(content);
                                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Shared to stream!')));

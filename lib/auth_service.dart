@@ -57,7 +57,7 @@ class ApiService {
     await prefs.clear();
   }
   
-  Future<Map<String, String>> getUser() async {
+  Future<Map<String, String>> getCurrentUser() async {
     final prefs = await SharedPreferences.getInstance();
     return {
         'id': prefs.getString('user_id') ?? '',
@@ -81,7 +81,7 @@ class ApiService {
   
   Future<bool> createPost(String content) async {
     final baseUrl = await getBaseUrl();
-    final user = await getUser();
+    final user = await getCurrentUser();
     if (user['id']!.isEmpty) return false;
     
     try {
@@ -98,7 +98,7 @@ class ApiService {
 
   Future<bool> addComment(String postId, String content) async {
     final baseUrl = await getBaseUrl();
-    final user = await getUser();
+    final user = await getCurrentUser();
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/api/posts/$postId/comments'),
