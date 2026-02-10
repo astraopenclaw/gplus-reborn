@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 import 'auth_service.dart';
 import 'create_post_page.dart';
 import 'post_detail_page.dart';
