@@ -112,8 +112,13 @@ class ApiService {
   
   Future<bool> likePost(String postId) async {
     final baseUrl = await getBaseUrl();
+    final user = await getSessionUser();
     try {
-      final response = await http.post(Uri.parse('$baseUrl/api/posts/$postId/like'));
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/posts/$postId/like'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'userId': user['id']}),
+      );
       return response.statusCode == 200;
     } catch (e) {
       return false;
