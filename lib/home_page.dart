@@ -81,10 +81,10 @@ class _HomePageState extends State<HomePage> {
             ),
             ListTile(
                 leading: const Icon(Icons.person),
-                title: const Text('Profile (Debug Force)'),
+                title: const Text('Profile'),
                 onTap: () {
                     Navigator.pop(context);
-                    // Force open even if userId is empty (for debug)
+                    // Force open even if userId is empty (for debug safety)
                     Navigator.push(context, MaterialPageRoute(builder: (_) => ProfilePage(userId: _userId.isEmpty ? '1' : _userId)));
                 },
             ),
