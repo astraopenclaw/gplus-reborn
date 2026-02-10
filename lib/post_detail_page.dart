@@ -28,7 +28,7 @@ class _PostDetailPageState extends State<PostDetailPage> {
     
     if (success) {
       // Add locally to update UI instantly
-      final user = await _api.getCurrentUser();
+      final user = await _api.getSessionUser();
       setState(() {
         if (_post['comments'] == null) _post['comments'] = [];
         (_post['comments'] as List).add({

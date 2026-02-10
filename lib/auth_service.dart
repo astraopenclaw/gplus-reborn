@@ -12,7 +12,6 @@ class ApiService {
 
   // --- AUTH ---
 
-  // Returns error message or null if success
   Future<String?> login(String email, String password) async {
     final baseUrl = await getBaseUrl();
     try {
@@ -57,7 +56,7 @@ class ApiService {
     await prefs.clear();
   }
   
-  Future<Map<String, String>> getCurrentUser() async {
+  Future<Map<String, String>> getSessionUser() async {
     final prefs = await SharedPreferences.getInstance();
     return {
         'id': prefs.getString('user_id') ?? '',
@@ -81,7 +80,7 @@ class ApiService {
   
   Future<bool> createPost(String content) async {
     final baseUrl = await getBaseUrl();
-    final user = await getCurrentUser();
+    final user = await getSessionUser();
     if (user['id']!.isEmpty) return false;
     
     try {
@@ -98,7 +97,7 @@ class ApiService {
 
   Future<bool> addComment(String postId, String content) async {
     final baseUrl = await getBaseUrl();
-    final user = await getCurrentUser();
+    final user = await getSessionUser();
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/api/posts/$postId/comments'),
