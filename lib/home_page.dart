@@ -139,11 +139,28 @@ class _HomePageState extends State<HomePage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            _actionBtn(Icons.add, '1', () {}),
+                            _actionBtn(
+                                Icons.add, 
+                                post['likes'] > 0 ? '+${post['likes']}' : '+1', 
+                                () async {
+                                    final success = await _api.likePost(post['id']);
+                                    if (success) {
+                                        setState(() {
+                                            post['likes'] = (post['likes'] ?? 0) + 1;
+                                        });
+                                    }
+                                }
+                            ),
                             _actionBtn(Icons.comment, 'Comment', () {
                                 Navigator.push(context, MaterialPageRoute(builder: (_) => PostDetailPage(post: post)));
                             }),
-                            _actionBtn(Icons.share, 'Share', () {}),
+                            _actionBtn(Icons.share, 'Share', () async {
+                                final user = await _api.getUser();
+                                final content = "Reshared from ${post['author']}:\n\n> ${post['content']}";
+                                await _api.createPost(content);
+                                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Shared to stream!')));
+                                _loadPosts(); // Reload to see new post
+                            }),
                           ],
                         ),
                       ],

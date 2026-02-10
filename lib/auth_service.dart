@@ -111,6 +111,21 @@ class ApiService {
     }
   }
   
+  Future<bool> likePost(String postId) async {
+    final baseUrl = await getBaseUrl();
+    try {
+      final response = await http.post(Uri.parse('$baseUrl/api/posts/$postId/like'));
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> isLoggedIn() async {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.containsKey('user_token');
+  }
+  
   Future<Map<String, dynamic>?> getUserProfile(String userId) async {
     final baseUrl = await getBaseUrl();
     try {

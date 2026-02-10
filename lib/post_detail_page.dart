@@ -27,9 +27,17 @@ class _PostDetailPageState extends State<PostDetailPage> {
     final success = await _api.addComment(_post['id'], _commentController.text);
     
     if (success) {
+      // Add locally to update UI instantly
+      final user = await _api.getUser();
+      setState(() {
+        if (_post['comments'] == null) _post['comments'] = [];
+        (_post['comments'] as List).add({
+            'author': user['name'],
+            'content': _commentController.text,
+            'date': 'Just now'
+        });
+      });
       _commentController.clear();
-      // Reload or just add locally (reload is better but harder here without full refresh)
-      // For now, let's just show a snackbar
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Comment added!')));
     }
     setState(() => _isLoading = false);

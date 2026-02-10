@@ -28,12 +28,17 @@ jobs:
     - name: Create Android Platform Files
       run: flutter create . --platforms android
 
-    - name: Enable Cleartext Traffic & Internet (Fix HTTP)
+    - name: Generate Icons
+      run: flutter pub run flutter_launcher_icons
+
+    - name: Enable Cleartext Traffic & Internet & Rename
       run: |
         # Add Internet Permission
         sed -i '/<manifest/a \    <uses-permission android:name="android.permission.INTERNET"/>' android/app/src/main/AndroidManifest.xml
         # Enable Cleartext
         sed -i 's/<application/<application android:usesCleartextTraffic="true"/g' android/app/src/main/AndroidManifest.xml
+        # Rename App to "Google+"
+        sed -i 's/android:label="gplus_reborn"/android:label="Google+"/g' android/app/src/main/AndroidManifest.xml
         cat android/app/src/main/AndroidManifest.xml # Verify
 
     - name: Build APK

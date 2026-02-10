@@ -41,6 +41,18 @@ class _LoginPageState extends State<LoginPage> {
   final _authService = ApiService();
   bool _isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _checkLogin();
+  }
+
+  void _checkLogin() async {
+      if (await _authService.isLoggedIn()) {
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomePage()));
+      }
+  }
+
   void _login() async {
     setState(() => _isLoading = true);
     final error = await _authService.login(
